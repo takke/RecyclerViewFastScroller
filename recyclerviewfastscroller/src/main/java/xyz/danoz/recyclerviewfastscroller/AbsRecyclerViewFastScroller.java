@@ -34,6 +34,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     private static final int[] STYLEABLE = R.styleable.AbsRecyclerViewFastScroller;
 
     private static final int AUTO_HIDE_SCROLLER_TIMEOUT_MILLS = 1000;
+    private static final float USE_FAST_SCROLLER_THRESHOLD = 3.0f;
 
     private static final int CURRENT_ANIMATION_NONE = 0;
     private static final int CURRENT_ANIMATION_SHOW = 1;
@@ -61,6 +62,8 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
 
     /** true: always show the scroller, false: hide the scroller automatically */
     private boolean mFastScrollAlwaysVisible = false;
+    /** Whether to use fast scroller for the current scroll state */
+    private boolean mUsingFastScroller = false;
     /** Type of the view animation (CURRENT_ANIMATION_xxx) */
     private int mCurrentAnimationType = CURRENT_ANIMATION_NONE;
     private Runnable mAutoHideProcessRunnable;
@@ -176,6 +179,10 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     @Override
     public void setRecyclerView(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
+
+        if (mRecyclerView != null) {
+            setStandardScrollerEnabled(mRecyclerView, false);
+        }
     }
 
     public void setSectionIndicator(SectionIndicator sectionIndicator) {
@@ -221,17 +228,13 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
         if (mOnScrollListener == null) {
             mOnScrollListener = new OnScrollListener() {
                 @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(recyclerView);
-                    moveHandleToPosition(scrollProgress);
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    handleOnScrollStateChanged(recyclerView, newState);
+                }
 
-                    // show scroll bar
-                    if (!mFastScrollAlwaysVisible) {
-                        showWithAnimation();
-                        if (!mIsGrabbingHandle) {
-                            scheduleAutoHideScrollerProcess();
-                        }
-                    }
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    handleOnScrolled(recyclerView, dx, dy);
                 }
             };
         }
@@ -249,6 +252,42 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
         // synchronize the handle position to the RecyclerView
         float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
         moveHandleToPosition(scrollProgress);
+    }
+
+    private void handleOnScrollStateChanged(RecyclerView recyclerView, int newState) {
+        switch (newState) {
+            case RecyclerView.SCROLL_STATE_IDLE:
+                mUsingFastScroller = false;
+                break;
+            case RecyclerView.SCROLL_STATE_DRAGGING:
+            case RecyclerView.SCROLL_STATE_SETTLING:
+                if (mFastScrollAlwaysVisible) {
+                    mUsingFastScroller = true;
+                    setStandardScrollerEnabled(recyclerView, false);
+                } else {
+                    final int numItemsPerPage = getNumItemsPerPage(recyclerView);
+                    final int numTotalItems = recyclerView.getAdapter().getItemCount();
+                    final float numPages = (numItemsPerPage > 0) ? (float) numTotalItems / numItemsPerPage : 0;
+
+                    mUsingFastScroller = (numPages >= USE_FAST_SCROLLER_THRESHOLD);
+
+                    setStandardScrollerEnabled(recyclerView, !mUsingFastScroller);
+                }
+                break;
+        }
+    }
+
+    private void handleOnScrolled(RecyclerView recyclerView, int dx, int dy) {
+        final float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(recyclerView);
+        moveHandleToPosition(scrollProgress);
+
+        // show scroll bar
+        if (!mFastScrollAlwaysVisible && mUsingFastScroller) {
+            showWithAnimation();
+            if (!mIsGrabbingHandle) {
+                scheduleAutoHideScrollerProcess();
+            }
+        }
     }
 
     /**
@@ -439,6 +478,20 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
      * @param scrollProgress fraction by which to move scroller [0 to 1]
      */
     public abstract void moveHandleToPosition(float scrollProgress);
+
+    /**
+     * Gets how many items can be displayed in a single page
+     * @param recyclerView {@link android.support.v7.widget.RecyclerView} instance which is associated to the scroller
+     * @return number of items
+     */
+    public abstract int getNumItemsPerPage(RecyclerView recyclerView);
+
+    /**
+     * Sets whether to use standard scroller
+     * @param recyclerView {@link android.support.v7.widget.RecyclerView} instance which is associated to the scroller
+     * @param enabled whether to use standard scroller
+     */
+    protected abstract void setStandardScrollerEnabled(RecyclerView recyclerView, boolean enabled);
 
     /**
      * Loads scroller show animation

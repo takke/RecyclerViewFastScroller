@@ -11,6 +11,8 @@ import xyz.danoz.recyclerviewfastscroller.R;
 import xyz.danoz.recyclerviewfastscroller.AbsRecyclerViewFastScroller;
 import xyz.danoz.recyclerviewfastscroller.RecyclerViewScroller;
 import xyz.danoz.recyclerviewfastscroller.calculation.VerticalScrollBoundsProvider;
+import xyz.danoz.recyclerviewfastscroller.calculation.count.NumberItemsPerPageCalculator;
+import xyz.danoz.recyclerviewfastscroller.calculation.count.VerticalLinearLayoutManagerNumberItemsPerPageCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.position.VerticalScreenPositionCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.TouchableScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.VerticalLinearLayoutManagerScrollProgressCalculator;
@@ -24,6 +26,7 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     private VerticalScrollProgressCalculator mScrollProgressCalculator;
     private VerticalScreenPositionCalculator mScreenPositionCalculator;
+    private NumberItemsPerPageCalculator mNumberItemsPerPageCalculator;
 
     public VerticalRecyclerViewFastScroller(Context context) {
         this(context, null);
@@ -53,6 +56,16 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
     }
 
     @Override
+    public int getNumItemsPerPage(RecyclerView recyclerView) {
+        return mNumberItemsPerPageCalculator.calculateNumItemsPerPage(recyclerView);
+    }
+
+    @Override
+    protected void setStandardScrollerEnabled(RecyclerView recyclerView, boolean enabled) {
+        recyclerView.setVerticalScrollBarEnabled(enabled);
+    }
+
+    @Override
     protected Animation loadShowAnimation() {
         return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_slide_in_right);
     }
@@ -68,5 +81,6 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
                 new VerticalScrollBoundsProvider(mBar.getY(), mBar.getY() + mBar.getHeight() - mHandle.getHeight());
         mScrollProgressCalculator = new VerticalLinearLayoutManagerScrollProgressCalculator(boundsProvider);
         mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
+        mNumberItemsPerPageCalculator = new VerticalLinearLayoutManagerNumberItemsPerPageCalculator();
     }
 }
