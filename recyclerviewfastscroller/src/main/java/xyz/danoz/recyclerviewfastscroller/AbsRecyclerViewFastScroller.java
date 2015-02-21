@@ -1,6 +1,7 @@
 package xyz.danoz.recyclerviewfastscroller;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -66,7 +67,10 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     private boolean mUsingFastScroller = false;
     /** Type of the view animation (CURRENT_ANIMATION_xxx) */
     private int mCurrentAnimationType = CURRENT_ANIMATION_NONE;
+    /** Indicates whether refreshing handle position is required */
+    private boolean mForceRefreshHandlePending;
     private Runnable mAutoHideProcessRunnable;
+    private Runnable mForceRefreshHandleRunnable;
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -117,14 +121,38 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
         if (!mFastScrollAlwaysVisible) {
             hide();
         }
+
+        mForceRefreshHandleRunnable = new Runnable() {
+            @Override
+            public void run() {
+                refreshHandle();
+            }
+        };
+
+        mForceRefreshHandlePending = true;
+    }
+
+    protected void refreshHandle() {
+        // synchronize the handle position to the RecyclerView
+        float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
+        moveHandleToPosition(scrollProgress);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
+        removeCallbacks(mForceRefreshHandleRunnable);
+        mForceRefreshHandleRunnable = null;
+
         cancelAutoHideScrollerProcess();
         mAutoHideProcessRunnable = null;
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mForceRefreshHandlePending = true;
     }
 
     private void applyCustomAttributesToView(View view, Drawable drawable, int color) {
@@ -249,9 +277,10 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
             onCreateScrollProgressCalculator();
         }
 
-        // synchronize the handle position to the RecyclerView
-        float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
-        moveHandleToPosition(scrollProgress);
+        if (mForceRefreshHandlePending) {
+            mForceRefreshHandlePending = false;
+            post(mForceRefreshHandleRunnable);
+        }
     }
 
     private void handleOnScrollStateChanged(RecyclerView recyclerView, int newState) {

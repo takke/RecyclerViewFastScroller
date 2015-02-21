@@ -6,15 +6,11 @@
         android:color="@android:color/white"
         />
 
-    <!--
-      Until API level 12, bottomLeftRadius and bottomRightRadius are flipped!!!
-      http://stackoverflow.com/questions/12505649/somethings-wrong-in-corner-radius-android
-      -->
     <corners
-        android:bottomRightRadius="@dimen/list_item_height"
+        android:bottomLeftRadius="@dimen/list_item_height"
         android:topLeftRadius="@dimen/list_item_height"
         android:topRightRadius="@dimen/list_item_height"
-        android:bottomLeftRadius="0dp"
+        android:bottomRightRadius="0dp"
         />
 
 </shape>

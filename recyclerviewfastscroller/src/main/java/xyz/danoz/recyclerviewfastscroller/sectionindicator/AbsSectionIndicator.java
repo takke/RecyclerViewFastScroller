@@ -2,6 +2,7 @@ package xyz.danoz.recyclerviewfastscroller.sectionindicator;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import xyz.danoz.recyclerviewfastscroller.R;
 import xyz.danoz.recyclerviewfastscroller.calculation.VerticalScrollBoundsProvider;
 import xyz.danoz.recyclerviewfastscroller.calculation.position.VerticalScreenPositionCalculator;
 import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.DefaultSectionIndicatorAlphaAnimator;
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.LegacyCompatSectionIndicatorAlphaAnimator;
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.SectionIndicatorAlphaAnimator;
+import xyz.danoz.recyclerviewfastscroller.utils.ViewUtils;
 
 /**
  * Abstract base implementation of a section indicator used to indicate the section of a list upon which the user is
@@ -21,7 +25,7 @@ public abstract class AbsSectionIndicator<T> extends FrameLayout implements Sect
     private static final int[] STYLEABLE = R.styleable.AbsSectionIndicator;
 
     private VerticalScreenPositionCalculator mScreenPositionCalculator;
-    private DefaultSectionIndicatorAlphaAnimator mDefaultSectionIndicatorAlphaAnimator;
+    private SectionIndicatorAlphaAnimator mDefaultSectionIndicatorAlphaAnimator;
 
     public AbsSectionIndicator(Context context) {
         this(context, null);
@@ -42,7 +46,11 @@ public abstract class AbsSectionIndicator<T> extends FrameLayout implements Sect
             attributes.recycle();
         }
 
-        mDefaultSectionIndicatorAlphaAnimator = new DefaultSectionIndicatorAlphaAnimator(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mDefaultSectionIndicatorAlphaAnimator = new DefaultSectionIndicatorAlphaAnimator(this);
+        } else {
+            mDefaultSectionIndicatorAlphaAnimator = new LegacyCompatSectionIndicatorAlphaAnimator(this);
+        }
     }
 
     /**
@@ -75,7 +83,7 @@ public abstract class AbsSectionIndicator<T> extends FrameLayout implements Sect
 
     @Override
     public void setProgress(float progress) {
-        setY(mScreenPositionCalculator.getYPositionFromScrollProgress(progress));
+        ViewUtils.setY(this, mScreenPositionCalculator.getYPositionFromScrollProgress(progress));
     }
 
     @Override

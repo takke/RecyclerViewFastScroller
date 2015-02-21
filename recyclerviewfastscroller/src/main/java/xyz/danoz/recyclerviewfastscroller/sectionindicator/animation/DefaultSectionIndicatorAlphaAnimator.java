@@ -1,12 +1,13 @@
 package xyz.danoz.recyclerviewfastscroller.sectionindicator.animation;
 
-import android.animation.ObjectAnimator;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.view.View;
 
 /**
- * Utility class for animating the popup section indicator
+ * Default implementation of the {@link SectionIndicatorAlphaAnimator}
  */
-public class DefaultSectionIndicatorAlphaAnimator {
+public class DefaultSectionIndicatorAlphaAnimator implements SectionIndicatorAlphaAnimator {
 
     private static final int ANIMATION_DURATION = 500;
 
@@ -15,18 +16,22 @@ public class DefaultSectionIndicatorAlphaAnimator {
 
     public DefaultSectionIndicatorAlphaAnimator(View sectionIndicatorView) {
         mSectionIndicatorView = sectionIndicatorView;
-        mSectionIndicatorView.setAlpha(0);
+        ViewCompat.setAlpha(mSectionIndicatorView, 0);
     }
 
-    public void animateTo(float target){
+    @Override
+    public void animateTo(float target) {
         if (target == mTargetAlpha) {
             return;
         }
 
-        ObjectAnimator alphaAnimator =
-                ObjectAnimator.ofFloat(mSectionIndicatorView, "alpha", mTargetAlpha, target);
-        alphaAnimator.setDuration(ANIMATION_DURATION);
-        alphaAnimator.start();
         mTargetAlpha = target;
+
+        ViewPropertyAnimatorCompat animator = ViewCompat.animate(mSectionIndicatorView);
+
+        animator.cancel();
+        animator.alpha(mTargetAlpha);
+        animator.setDuration(ANIMATION_DURATION);
+        animator.start();
     }
 }

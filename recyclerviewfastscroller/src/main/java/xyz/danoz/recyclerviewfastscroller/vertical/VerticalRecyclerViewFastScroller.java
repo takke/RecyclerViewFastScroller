@@ -17,6 +17,7 @@ import xyz.danoz.recyclerviewfastscroller.calculation.position.VerticalScreenPos
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.TouchableScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.VerticalLinearLayoutManagerScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.VerticalScrollProgressCalculator;
+import xyz.danoz.recyclerviewfastscroller.utils.ViewUtils;
 
 /**
  * Widget used to fast-scroll a vertical {@link RecyclerView}.
@@ -52,7 +53,8 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     @Override
     public void moveHandleToPosition(float scrollProgress) {
-        mHandle.setY(mScreenPositionCalculator.getYPositionFromScrollProgress(scrollProgress));
+        final float yPos = mScreenPositionCalculator.getYPositionFromScrollProgress(scrollProgress);
+        ViewUtils.setY(mHandle, yPos);
     }
 
     @Override
@@ -77,8 +79,9 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     @Override
     protected void onCreateScrollProgressCalculator() {
+        final float barY = ViewUtils.getY(mBar);
         VerticalScrollBoundsProvider boundsProvider =
-                new VerticalScrollBoundsProvider(mBar.getY(), mBar.getY() + mBar.getHeight() - mHandle.getHeight());
+                new VerticalScrollBoundsProvider(barY, barY + mBar.getHeight() - mHandle.getHeight());
         mScrollProgressCalculator = new VerticalLinearLayoutManagerScrollProgressCalculator(boundsProvider);
         mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
         mNumberItemsPerPageCalculator = new VerticalLinearLayoutManagerNumberItemsPerPageCalculator();
