@@ -2,11 +2,11 @@ package xyz.danoz.recyclerviewfastscroller.sectionindicator;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import xyz.danoz.recyclerviewfastscroller.R;
 import xyz.danoz.recyclerviewfastscroller.calculation.VerticalScrollBoundsProvider;
@@ -20,12 +20,13 @@ import xyz.danoz.recyclerviewfastscroller.utils.ViewUtils;
  * Abstract base implementation of a section indicator used to indicate the section of a list upon which the user is
  * currently fast scrolling.
  */
-public abstract class AbsSectionIndicator<T> extends FrameLayout implements SectionIndicator<T> {
+public abstract class AbsSectionIndicator<T> extends RelativeLayout implements SectionIndicator<T> {
 
     private static final int[] STYLEABLE = R.styleable.AbsSectionIndicator;
 
     private VerticalScreenPositionCalculator mScreenPositionCalculator;
     private SectionIndicatorAlphaAnimator mDefaultSectionIndicatorAlphaAnimator;
+    private float mIndicatorOffset;
 
     public AbsSectionIndicator(Context context) {
         this(context, null);
@@ -72,18 +73,17 @@ public abstract class AbsSectionIndicator<T> extends FrameLayout implements Sect
     protected abstract void applyCustomBackgroundColorAttribute(int color);
 
     @Override
-    public void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        if (mScreenPositionCalculator == null) {
-            VerticalScrollBoundsProvider boundsProvider =
-                    new VerticalScrollBoundsProvider(0, ((ViewGroup) getParent()).getHeight() - getHeight());
-            mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
-        }
+    public void onUpdateScrollBarBounds(Rect barBounds) {
+        VerticalScrollBoundsProvider boundsProvider = new VerticalScrollBoundsProvider(0, barBounds.height());
+        mIndicatorOffset = - getHeight() + barBounds.top;
+        mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
     }
 
     @Override
     public void setProgress(float progress) {
-        ViewUtils.setY(this, mScreenPositionCalculator.getYPositionFromScrollProgress(progress));
+        float posY = mScreenPositionCalculator.getYPositionFromScrollProgress(progress);
+        posY = Math.max(0, posY + mIndicatorOffset);
+        ViewUtils.setTranslationY(this, posY);
     }
 
     @Override

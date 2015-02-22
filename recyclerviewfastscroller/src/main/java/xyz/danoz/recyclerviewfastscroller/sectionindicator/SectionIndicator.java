@@ -1,5 +1,6 @@
 package xyz.danoz.recyclerviewfastscroller.sectionindicator;
 
+import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.widget.SectionIndexer;
 
@@ -26,4 +27,12 @@ public interface SectionIndicator<T> {
      * @param targetAlpha alpha to animate towards
      */
     public void animateAlpha(float targetAlpha);
+
+
+    /**
+     * Called when scroll bar's bounds are updated
+     *
+     * @param barBounds the bounds of scroll bar view
+     */
+    public void onUpdateScrollBarBounds(Rect barBounds);
 }

@@ -33,8 +33,6 @@ public class RecyclerViewWithSectionIndicatorFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         VerticalRecyclerViewFastScroller fastScroller =
                 (VerticalRecyclerViewFastScroller) rootView.findViewById(R.id.fast_scroller);
-        SectionTitleIndicator sectionTitleIndicator =
-                (SectionTitleIndicator) rootView.findViewById(R.id.fast_scroller_section_title_indicator);
 
         RecyclerView.Adapter adapter = new ColorfulAdapter(new ColorDataSet());
         recyclerView.setAdapter(adapter);
@@ -44,9 +42,6 @@ public class RecyclerViewWithSectionIndicatorFragment extends Fragment {
 
         // Connect the scroller to the recycler (to let the recycler scroll the scroller's handle)
         recyclerView.setOnScrollListener(fastScroller.getOnScrollListener());
-
-        // Connect the section indicator to the scroller
-        fastScroller.setSectionIndicator(sectionTitleIndicator);
 
         setRecyclerViewLayoutManager(recyclerView);
 

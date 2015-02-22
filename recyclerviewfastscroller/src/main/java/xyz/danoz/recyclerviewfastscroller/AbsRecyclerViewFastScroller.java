@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -18,10 +19,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.SectionIndexer;
 
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.ScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.TouchableScrollProgressCalculator;
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.AbsSectionIndicator;
 import xyz.danoz.recyclerviewfastscroller.sectionindicator.SectionIndicator;
 
 /**
@@ -30,7 +33,7 @@ import xyz.danoz.recyclerviewfastscroller.sectionindicator.SectionIndicator;
  *
  * TODO: More specifics and better support for effectively extending this base class
  */
-public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements RecyclerViewScroller {
+public abstract class AbsRecyclerViewFastScroller extends RelativeLayout implements RecyclerViewScroller {
 
     private static final int[] STYLEABLE = R.styleable.AbsRecyclerViewFastScroller;
 
@@ -41,7 +44,8 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     private static final int CURRENT_ANIMATION_SHOW = 1;
     private static final int CURRENT_ANIMATION_HIDE = 2;
 
-
+    /** The container view for the long bar and handle views */
+    protected final FrameLayout mBarHandleContainer;
     /** The long bar along which a handle travels */
     protected final View mBar;
     /** The handle that signifies the user's progress in the list */
@@ -71,6 +75,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     private boolean mForceRefreshHandlePending;
     private Runnable mAutoHideProcessRunnable;
     private Runnable mForceRefreshHandleRunnable;
+    private Rect mTempRect = new Rect();
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -91,8 +96,10 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             inflater.inflate(layoutResource, this, true);
 
+            mBarHandleContainer = (FrameLayout) findViewById(R.id.scroll_bar_handle_container);
             mBar = findViewById(R.id.scroll_bar);
             mHandle = findViewById(R.id.scroll_handle);
+            mSectionIndicator = (AbsSectionIndicator) findViewById(R.id.scroll_section_indicator);
 
             Drawable barDrawable = attributes.getDrawable(R.styleable.AbsRecyclerViewFastScroller_barBackground);
             int barColor = attributes.getColor(R.styleable.AbsRecyclerViewFastScroller_barColor, Color.GRAY);
@@ -105,7 +112,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
             attributes.recycle();
         }
 
-        setOnTouchListener(new FastScrollerTouchListener(this));
+        mBarHandleContainer.setOnTouchListener(new FastScrollerTouchListener(this));
     }
 
     @Override
@@ -213,10 +220,6 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
         }
     }
 
-    public void setSectionIndicator(SectionIndicator sectionIndicator) {
-        mSectionIndicator = sectionIndicator;
-    }
-
     @Nullable
     public SectionIndicator getSectionIndicator() {
         return mSectionIndicator;
@@ -273,10 +276,22 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (getScrollProgressCalculator() == null) {
-            onCreateScrollProgressCalculator();
+        if (changed) {
+            final Rect bounds = mTempRect;
+
+            bounds.left = mBar.getLeft();
+            bounds.top = mBar.getTop();
+            bounds.right = mBar.getRight();
+            bounds.bottom = mBar.getBottom();
+
+            onUpdateScrollBarBounds(bounds);
+
+            if (mSectionIndicator != null) {
+                mSectionIndicator.onUpdateScrollBarBounds(bounds);
+            }
         }
 
+        // refresh handle position if needed
         if (mForceRefreshHandlePending) {
             mForceRefreshHandlePending = false;
             post(mForceRefreshHandleRunnable);
@@ -320,9 +335,9 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     }
 
     /**
-     * Sub classes have to override this method and create the ScrollProgressCalculator instance in this method.
+     * Sub classes have to override this method and prepare for scrolling.
      */
-    protected abstract void onCreateScrollProgressCalculator();
+    protected abstract void onUpdateScrollBarBounds(Rect barBounds);
 
     /**
      * Returns true if the fast scroller is set to always show on this view.

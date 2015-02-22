@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="scroll_section_indicator" type="id" />
+    <item name="scroll_bar_handle_container" type="id" />
+    <item name="scroll_bar" type="id" />
+    <item name="scroll_handle" type="id" />
+</resources>

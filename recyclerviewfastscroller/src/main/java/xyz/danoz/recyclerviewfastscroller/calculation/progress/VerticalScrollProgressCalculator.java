@@ -17,14 +17,16 @@ public abstract class VerticalScrollProgressCalculator implements TouchableScrol
 
     @Override
     public float calculateScrollProgress(MotionEvent event) {
-        float y = event.getY();
+        final float y = event.getY();
+        final float min = mScrollBoundsProvider.getMinimumScrollY();
+        final float max = mScrollBoundsProvider.getMaximumScrollY();
 
-        if (y <= mScrollBoundsProvider.getMinimumScrollY()) {
+        if (y <= min) {
             return 0;
-        } else if (y >= mScrollBoundsProvider.getMaximumScrollY()) {
+        } else if (y >= max) {
             return 1;
         } else {
-            return y / mScrollBoundsProvider.getMaximumScrollY();
+            return (y - min) / (max - min);
         }
     }
 }

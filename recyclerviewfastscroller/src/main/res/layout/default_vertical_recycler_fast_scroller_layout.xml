@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    >
+
+    <include
+        android:id="@+id/scroll_bar_handle_container"
+        layout="@layout/default_vertical_recycler_fast_scroller_bar_handle_container"
+        />
+
+</RelativeLayout>

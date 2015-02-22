@@ -14,13 +14,9 @@ public class VerticalScreenPositionCalculator {
     }
 
     public float getYPositionFromScrollProgress(float scrollProgress) {
-        return Math.max(
-                mVerticalScrollBoundsProvider.getMinimumScrollY(),
-                Math.min(
-                        scrollProgress * mVerticalScrollBoundsProvider.getMaximumScrollY(),
-                        mVerticalScrollBoundsProvider.getMaximumScrollY()
-                )
-        );
+        final float min = mVerticalScrollBoundsProvider.getMinimumScrollY();
+        final float max = mVerticalScrollBoundsProvider.getMaximumScrollY();
+        return scrollProgress * (max - min);
     }
 
 }

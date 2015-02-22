@@ -10,13 +10,13 @@ public class ViewUtils {
     }
 
     /**
-     * Compatibility version of the View.setX() method.
+     * Compatibility version of the View.setTranslationX() method.
      * @param view target view
      * @param position x position
      */
-    public static void setX(View view, float position) {
+    public static void setTranslationX(View view, float position) {
         if (supportsViewTranslation()) {
-            ViewCompat.setX(view, position);
+            ViewCompat.setTranslationX(view, position);
         } else {
             final ViewGroup.MarginLayoutParams lp = getMarginLayoutParams(view);
             lp.leftMargin = (int) (position + 0.5f);
@@ -25,13 +25,13 @@ public class ViewUtils {
     }
 
     /**
-     * Compatibility version of the View.getX() method.
+     * Compatibility version of the View.getTranslationX() method.
      * @param view target view
      * @return x position
      */
-    public static float getX(View view) {
+    public static float getTranslationX(View view) {
         if (supportsViewTranslation()) {
-            return ViewCompat.getX(view);
+            return ViewCompat.getTranslationX(view);
         } else {
             final ViewGroup.MarginLayoutParams lp = getMarginLayoutParams(view);
             return lp.leftMargin;
@@ -39,13 +39,13 @@ public class ViewUtils {
     }
 
     /**
-     * Compatibility version of the View.setY() method.
+     * Compatibility version of the View.setTranslationY() method.
      * @param view target view
      * @param position y position
      */
-    public static void setY(View view, float position) {
+    public static void setTranslationY(View view, float position) {
         if (supportsViewTranslation()) {
-            ViewCompat.setY(view, position);
+            ViewCompat.setTranslationY(view, position);
         } else {
             final ViewGroup.MarginLayoutParams lp = getMarginLayoutParams(view);
             lp.topMargin = (int) (position + 0.5f);
@@ -54,13 +54,13 @@ public class ViewUtils {
     }
 
     /**
-     * Compatibility version of the View.getY() method.
+     * Compatibility version of the View.getTranslationX() method.
      * @param view target view
      * @return y position
      */
-    public static float getY(View view) {
+    public static float getTranslationY(View view) {
         if (supportsViewTranslation()) {
-            return ViewCompat.getY(view);
+            return ViewCompat.getTranslationX(view);
         } else {
             final ViewGroup.MarginLayoutParams lp = getMarginLayoutParams(view);
             return lp.topMargin;
