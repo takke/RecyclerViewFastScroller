@@ -7,9 +7,9 @@
         />
 
     <corners
-        android:bottomLeftRadius="@dimen/list_item_height"
-        android:topLeftRadius="@dimen/list_item_height"
-        android:topRightRadius="@dimen/list_item_height"
+        android:bottomLeftRadius="@dimen/fast_scroller_section_indicator_size"
+        android:topLeftRadius="@dimen/fast_scroller_section_indicator_size"
+        android:topRightRadius="@dimen/fast_scroller_section_indicator_size"
         android:bottomRightRadius="0dp"
         />
 

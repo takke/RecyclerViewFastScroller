@@ -6,7 +6,7 @@
     <dimen name="margin_large">32dp</dimen>
     <dimen name="margin_huge">64dp</dimen>
 
-    <dimen name="list_item_height">72dp</dimen>
+    <dimen name="fast_scroller_section_indicator_size">72dp</dimen>
 
 
     <dimen name="fast_scroller_bar_width">1dp</dimen>
@@ -15,4 +15,5 @@
     <dimen name="fast_scroller_half_handle_height">16dp</dimen>
     <dimen name="fast_scroller_bar_handle_container_v_padding">8dp</dimen>
     <dimen name="fast_scroller_bar_handle_container_h_padding">8dp</dimen>
+
 </resources>

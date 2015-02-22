@@ -11,9 +11,9 @@
       http://stackoverflow.com/questions/12505649/somethings-wrong-in-corner-radius-android
       -->
     <corners
-        android:bottomRightRadius="@dimen/list_item_height"
-        android:topLeftRadius="@dimen/list_item_height"
-        android:topRightRadius="@dimen/list_item_height"
+        android:bottomRightRadius="@dimen/fast_scroller_section_indicator_size"
+        android:topLeftRadius="@dimen/fast_scroller_section_indicator_size"
+        android:topRightRadius="@dimen/fast_scroller_section_indicator_size"
         android:bottomLeftRadius="0dp"
         />
 
