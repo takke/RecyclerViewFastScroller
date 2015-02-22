@@ -11,9 +11,9 @@ import android.widget.RelativeLayout;
 import xyz.danoz.recyclerviewfastscroller.R;
 import xyz.danoz.recyclerviewfastscroller.calculation.VerticalScrollBoundsProvider;
 import xyz.danoz.recyclerviewfastscroller.calculation.position.VerticalScreenPositionCalculator;
-import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.DefaultSectionIndicatorAlphaAnimator;
-import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.LegacyCompatSectionIndicatorAlphaAnimator;
-import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.SectionIndicatorAlphaAnimator;
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.DefaultSectionIndicatorAnimationHelper;
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.LegacyCompatSectionIndicatorAnimationHelper;
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.animation.SectionIndicatorAnimationHelper;
 import xyz.danoz.recyclerviewfastscroller.utils.ViewUtils;
 
 /**
@@ -25,7 +25,7 @@ public abstract class AbsSectionIndicator<T> extends RelativeLayout implements S
     private static final int[] STYLEABLE = R.styleable.AbsSectionIndicator;
 
     private VerticalScreenPositionCalculator mScreenPositionCalculator;
-    private SectionIndicatorAlphaAnimator mDefaultSectionIndicatorAlphaAnimator;
+    private SectionIndicatorAnimationHelper mDefaultSectionIndicatorAnimationHelper;
     private float mIndicatorOffset;
 
     public AbsSectionIndicator(Context context) {
@@ -48,9 +48,9 @@ public abstract class AbsSectionIndicator<T> extends RelativeLayout implements S
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mDefaultSectionIndicatorAlphaAnimator = new DefaultSectionIndicatorAlphaAnimator(this);
+            mDefaultSectionIndicatorAnimationHelper = new DefaultSectionIndicatorAnimationHelper(this);
         } else {
-            mDefaultSectionIndicatorAlphaAnimator = new LegacyCompatSectionIndicatorAlphaAnimator(this);
+            mDefaultSectionIndicatorAnimationHelper = new LegacyCompatSectionIndicatorAnimationHelper(this);
         }
     }
 
@@ -87,8 +87,13 @@ public abstract class AbsSectionIndicator<T> extends RelativeLayout implements S
     }
 
     @Override
-    public void animateAlpha(float targetAlpha) {
-        mDefaultSectionIndicatorAlphaAnimator.animateTo(targetAlpha);
+    public void showWithAnimation() {
+        mDefaultSectionIndicatorAnimationHelper.showWithAnimation();
+    }
+
+    @Override
+    public void hideWithAnimation() {
+        mDefaultSectionIndicatorAnimationHelper.hideWithAnimation();
     }
 
     @Override

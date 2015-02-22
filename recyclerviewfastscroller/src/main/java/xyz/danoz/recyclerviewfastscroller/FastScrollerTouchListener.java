@@ -51,10 +51,11 @@ class FastScrollerTouchListener implements OnTouchListener {
 
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                sectionIndicator.animateAlpha(1f);
+                sectionIndicator.showWithAnimation();
                 return;
             case MotionEvent.ACTION_UP:
-                sectionIndicator.animateAlpha(0f);
+                sectionIndicator.hideWithAnimation();
+                break;
         }
     }
 

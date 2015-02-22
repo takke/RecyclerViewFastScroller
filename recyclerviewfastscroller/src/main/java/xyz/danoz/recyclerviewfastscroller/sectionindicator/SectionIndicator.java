@@ -23,11 +23,14 @@ public interface SectionIndicator<T> {
     public void setSection(T section);
 
     /**
-     * Method for animating the alpha of the indicator
-     * @param targetAlpha alpha to animate towards
+     * Method for show the indicator with animation
      */
-    public void animateAlpha(float targetAlpha);
+    public void showWithAnimation();
 
+    /**
+     * Method for hide the indicator with animation
+     */
+    public void hideWithAnimation();
 
     /**
      * Called when scroll bar's bounds are updated

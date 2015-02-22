@@ -3,6 +3,7 @@ package xyz.danoz.recyclerviewfastscroller.sectionindicator.animation;
 /**
  * Utility class for animating the popup section indicator
  */
-public interface SectionIndicatorAlphaAnimator {
-    void animateTo(float target);
+public interface SectionIndicatorAnimationHelper {
+    void showWithAnimation();
+    void hideWithAnimation();
 }
