@@ -70,12 +70,12 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     @Override
     protected Animation loadShowAnimation() {
-        return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_slide_in_right);
+        return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_show_slide_in);
     }
 
     @Override
     protected Animation loadHideAnimation() {
-        return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_slide_out_right);
+        return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_hide_slide_out);
     }
 
     @Override

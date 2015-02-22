@@ -10,6 +10,7 @@
         layout="@layout/default_vertical_recycler_fast_scroller_bar_handle_container"
         android:id="@+id/scroll_bar_handle_container"
         android:layout_toRightOf="@+id/scroll_section_indicator"
+        android:layout_toEndOf="@+id/scroll_section_indicator"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         />
@@ -18,8 +19,6 @@
         android:id="@+id/scroll_section_indicator"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/list_item_height"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
 
         custom:backgroundColor="@android:color/white"
         custom:textColor="@android:color/black"

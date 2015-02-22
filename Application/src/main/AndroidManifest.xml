@@ -23,6 +23,7 @@
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
 
     <application android:allowBackup="true"
+        android:supportsRtl="true"
         android:label="@string/app_name"
         android:icon="@drawable/recycler_fast_scroller_icon"
         android:theme="@style/AppTheme">
