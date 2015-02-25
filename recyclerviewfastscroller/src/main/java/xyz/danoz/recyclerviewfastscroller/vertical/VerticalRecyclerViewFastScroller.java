@@ -44,7 +44,7 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     @Override
     protected int getLayoutResourceId() {
-        return R.layout.default_vertical_recycler_fast_scroller_layout;
+        return R.layout.rvfs_default_vertical_layout;
     }
 
     @Override
@@ -70,12 +70,12 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     @Override
     protected Animation loadShowAnimation() {
-        return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_show_slide_in);
+        return AnimationUtils.loadAnimation(getContext(), R.anim.rvfs_fast_scroller_show_slide_in);
     }
 
     @Override
     protected Animation loadHideAnimation() {
-        return AnimationUtils.loadAnimation(getContext(), R.anim.fast_scroller_hide_slide_out);
+        return AnimationUtils.loadAnimation(getContext(), R.anim.rvfs_fast_scroller_hide_slide_out);
     }
 
     @Override

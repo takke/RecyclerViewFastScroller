@@ -35,7 +35,7 @@ import xyz.danoz.recyclerviewfastscroller.sectionindicator.SectionIndicator;
  */
 public abstract class AbsRecyclerViewFastScroller extends RelativeLayout implements RecyclerViewScroller {
 
-    private static final int[] STYLEABLE = R.styleable.AbsRecyclerViewFastScroller;
+    private static final int[] STYLEABLE = R.styleable.rvfs_AbsRecyclerViewFastScroller;
 
     private static final int AUTO_HIDE_SCROLLER_TIMEOUT_MILLS = 1000;
     private static final float USE_FAST_SCROLLER_THRESHOLD = 3.0f;
@@ -91,22 +91,22 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         TypedArray attributes = getContext().getTheme().obtainStyledAttributes(attrs, STYLEABLE, 0, 0);
 
         try {
-            int layoutResource = attributes.getResourceId(R.styleable.AbsRecyclerViewFastScroller_fast_scroller_layout,
+            int layoutResource = attributes.getResourceId(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_fast_scroller_layout,
                     getLayoutResourceId());
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             inflater.inflate(layoutResource, this, true);
 
-            mBarHandleContainer = (FrameLayout) findViewById(R.id.scroll_bar_handle_container);
-            mBar = findViewById(R.id.scroll_bar);
-            mHandle = findViewById(R.id.scroll_handle);
-            mSectionIndicator = (AbsSectionIndicator) findViewById(R.id.scroll_section_indicator);
+            mBarHandleContainer = (FrameLayout) findViewById(R.id.rvfs_scroll_bar_handle_container);
+            mBar = findViewById(R.id.rvfs_scroll_bar);
+            mHandle = findViewById(R.id.rvfs_scroll_handle);
+            mSectionIndicator = (AbsSectionIndicator) findViewById(R.id.rvfs_scroll_section_indicator);
 
-            Drawable barDrawable = attributes.getDrawable(R.styleable.AbsRecyclerViewFastScroller_barBackground);
-            int barColor = attributes.getColor(R.styleable.AbsRecyclerViewFastScroller_barColor, Color.GRAY);
+            Drawable barDrawable = attributes.getDrawable(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_barBackground);
+            int barColor = attributes.getColor(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_barColor, Color.GRAY);
             applyCustomAttributesToView(mBar, barDrawable, barColor);
 
-            Drawable handleDrawable = attributes.getDrawable(R.styleable.AbsRecyclerViewFastScroller_handleBackground);
-            int handleColor = attributes.getColor(R.styleable.AbsRecyclerViewFastScroller_handleColor, Color.GRAY);
+            Drawable handleDrawable = attributes.getDrawable(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_handleBackground);
+            int handleColor = attributes.getColor(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_handleColor, Color.GRAY);
             applyCustomAttributesToView(mHandle, handleDrawable, handleColor);
         } finally {
             attributes.recycle();

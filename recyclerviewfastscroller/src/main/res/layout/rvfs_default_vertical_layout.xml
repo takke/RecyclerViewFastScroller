@@ -5,8 +5,8 @@
     >
 
     <include
-        android:id="@+id/scroll_bar_handle_container"
-        layout="@layout/default_vertical_recycler_fast_scroller_bar_handle_container"
+        android:id="@id/rvfs_scroll_bar_handle_container"
+        layout="@layout/rvfs_default_vertical_bar_handle_container"
         />
 
 </RelativeLayout>

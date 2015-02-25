@@ -21,9 +21,9 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
 
-        custom:barColor="@color/fastScrollBarColor"
-        custom:handleBackground="@drawable/fast_scroller_handle_rounded"
-        custom:fast_scroller_layout="@layout/vertical_recycler_fast_scroller_layout_with_color_group_section_indicator"
+        custom:rvfs_barColor="@color/fastScrollBarColor"
+        custom:rvfs_handleBackground="@drawable/rvfs_fast_scroller_handle_rounded"
+        custom:rvfs_fast_scroller_layout="@layout/vertical_recycler_fast_scroller_layout_with_color_group_section_indicator"
         />
 
 </RelativeLayout>

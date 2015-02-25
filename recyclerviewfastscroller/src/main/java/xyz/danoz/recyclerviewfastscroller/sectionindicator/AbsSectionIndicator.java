@@ -22,7 +22,7 @@ import xyz.danoz.recyclerviewfastscroller.utils.ViewUtils;
  */
 public abstract class AbsSectionIndicator<T> extends RelativeLayout implements SectionIndicator<T> {
 
-    private static final int[] STYLEABLE = R.styleable.AbsSectionIndicator;
+    private static final int[] STYLEABLE = R.styleable.rvfs_AbsSectionIndicator;
 
     private VerticalScreenPositionCalculator mScreenPositionCalculator;
     private SectionIndicatorAnimationHelper mDefaultSectionIndicatorAnimationHelper;
@@ -40,7 +40,7 @@ public abstract class AbsSectionIndicator<T> extends RelativeLayout implements S
         super(context, attrs, defStyleAttr);
         TypedArray attributes = getContext().getTheme().obtainStyledAttributes(attrs, STYLEABLE, 0, 0);
         try {
-            int layoutId = attributes.getResourceId(R.styleable.AbsSectionIndicator_section_indicator_layout, getDefaultLayoutId());
+            int layoutId = attributes.getResourceId(R.styleable.rvfs_AbsSectionIndicator_rvfs_section_indicator_layout, getDefaultLayoutId());
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             inflater.inflate(layoutId, this, true);
         } finally {

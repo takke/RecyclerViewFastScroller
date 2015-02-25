@@ -16,8 +16,8 @@ import xyz.danoz.recyclerviewfastscroller.sectionindicator.AbsSectionIndicator;
  */
 public abstract class SectionTitleIndicator<T> extends AbsSectionIndicator<T> {
 
-    private static final int[] STYLEABLE = R.styleable.SectionTitleIndicator;
-    private static final int DEFAULT_TITLE_INDICATOR_LAYOUT = R.layout.section_indicator_with_title;
+    private static final int[] STYLEABLE = R.styleable.rvfs_SectionTitleIndicator;
+    private static final int DEFAULT_TITLE_INDICATOR_LAYOUT = R.layout.rvfs_section_indicator_with_title;
     private static final int DEFAULT_BACKGROUND_COLOR = android.R.color.darker_gray;
     private static final int DEFAULT_TEXT_COLOR = android.R.color.white;
 
@@ -34,17 +34,17 @@ public abstract class SectionTitleIndicator<T> extends AbsSectionIndicator<T> {
 
     public SectionTitleIndicator(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mIndicatorBackground = findViewById(R.id.section_title_popup);
-        mTitleText = (TextView) findViewById(R.id.section_indicator_text);
+        mIndicatorBackground = findViewById(R.id.rvfs_section_title_popup);
+        mTitleText = (TextView) findViewById(R.id.rvfs_section_indicator_text);
 
         TypedArray attributes = getContext().getTheme().obtainStyledAttributes(attrs, STYLEABLE, 0, 0);
         try {
             int customBackgroundColor =
-                    attributes.getColor(R.styleable.SectionTitleIndicator_backgroundColor, getDefaultBackgroundColor());
+                    attributes.getColor(R.styleable.rvfs_SectionTitleIndicator_rvfs_backgroundColor, getDefaultBackgroundColor());
             applyCustomBackgroundColorAttribute(customBackgroundColor);
 
             int customTextColor =
-                    attributes.getColor(R.styleable.SectionTitleIndicator_textColor, getDefaultBackgroundColor());
+                    attributes.getColor(R.styleable.rvfs_SectionTitleIndicator_rvfs_textColor, getDefaultBackgroundColor());
             applyCustomTextColorAttribute(customTextColor);
         } finally {
             attributes.recycle();
@@ -70,7 +70,7 @@ public abstract class SectionTitleIndicator<T> extends AbsSectionIndicator<T> {
 
     /**
      * Clients can provide a custom background color for a section indicator
-     * @param color provided in XML via the {@link R.styleable#SectionTitleIndicator_backgroundColor} parameter. If not
+     * @param color provided in XML via the {@link R.styleable#rvfs_SectionTitleIndicator_rvfs_backgroundColor} parameter. If not
      *              specified in XML, this defaults to that which is provided by {@link #getDefaultBackgroundColor()}
      */
     @Override
@@ -96,7 +96,7 @@ public abstract class SectionTitleIndicator<T> extends AbsSectionIndicator<T> {
 
     /**
      * Clients can provide a custom text color for a section indicator
-     * @param color provided in XML via the {@link R.styleable#SectionTitleIndicator_textColor} parameter. If not
+     * @param color provided in XML via the {@link R.styleable#rvfs_SectionTitleIndicator_rvfs_textColor} parameter. If not
      *              specified in XML, this defaults to that which is provided by {@link #getDefaultTextColor()} ()}
      */
     protected void applyCustomTextColorAttribute(int color) {
