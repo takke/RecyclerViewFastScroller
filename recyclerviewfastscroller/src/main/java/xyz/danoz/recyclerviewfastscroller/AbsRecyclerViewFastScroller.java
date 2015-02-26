@@ -227,9 +227,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     @Override
     public void scrollTo(float scrollProgress, boolean fromTouch) {
-        int position = getPositionFromScrollProgress(scrollProgress);
-        mRecyclerView.scrollToPosition(position);
-
+        int position = scrollToProgress(mRecyclerView, scrollProgress);
         updateSectionIndicator(position, scrollProgress);
     }
 
@@ -243,10 +241,6 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
                 mSectionIndicator.setSection(sections[section]);
             }
         }
-    }
-
-    private int getPositionFromScrollProgress(float scrollProgress) {
-        return (int) (mRecyclerView.getAdapter().getItemCount() * scrollProgress);
     }
 
     /**
@@ -548,4 +542,13 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
      * @return animation which is used for the hideWithAnimation() method
      */
     protected abstract Animation loadHideAnimation();
+
+    /**
+     * Scroll {@link android.support.v7.widget.RecyclerView} to specified scroller progress
+     * @param recyclerView Target {@link android.support.v7.widget.RecyclerView} instance
+     * @param progress Scroll progress [0.0 .. 1.0]
+     *
+     * @return scrolled position
+     */
+    protected abstract int scrollToProgress(RecyclerView recyclerView, float progress);
 }

@@ -85,4 +85,45 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
         mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
         mNumberItemsPerPageCalculator = new VerticalLinearLayoutManagerNumberItemsPerPageCalculator();
     }
+
+    @Override
+    protected int scrollToProgress(RecyclerView recyclerView, float progress) {
+        final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        final int height = layoutManager.getHeight();
+        final int itemCount = layoutManager.getItemCount();
+
+        if (height == 0 || itemCount == 0) {
+            return 0;
+        }
+
+        final float fScrollPosition = Math.max(0.0f, (itemCount - 1)) * progress;
+        final int iScrollPosition = (int) fScrollPosition;
+
+        final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
+        final int lastVisiblePos = layoutManager.findLastVisibleItemPosition();
+
+        final int lastCompletelyVisiblePos = layoutManager.findLastCompletelyVisibleItemPosition();
+
+        if (firstVisiblePos == RecyclerView.NO_POSITION || lastVisiblePos == RecyclerView.NO_POSITION) {
+            return 0;
+        }
+
+        if (iScrollPosition >= firstVisiblePos && iScrollPosition <= lastVisiblePos) {
+            final RecyclerView.ViewHolder scrollPosViewHolder = recyclerView.findViewHolderForPosition(iScrollPosition);
+            final RecyclerView.ViewHolder lastItemViewHolder = (lastVisiblePos == (itemCount - 1)) ? recyclerView.findViewHolderForPosition(lastVisiblePos) : null;
+            final int curItemTop = scrollPosViewHolder.itemView.getTop();
+            final int lastItemTop = (lastItemViewHolder != null) ? lastItemViewHolder.itemView.getTop() : Integer.MAX_VALUE;
+            final int scrollAmount = Math.min(curItemTop, lastItemTop);
+
+            if ((scrollAmount > 0) && (lastCompletelyVisiblePos == (itemCount - 1))) {
+                // reached to the end of the list
+            } else {
+                recyclerView.scrollBy(0, scrollAmount);
+            }
+        } else {
+            recyclerView.scrollToPosition(iScrollPosition);
+        }
+
+        return iScrollPosition;
+    }
 }
