@@ -22,6 +22,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SectionIndexer;
 
+import java.lang.ref.WeakReference;
+
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.ScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.TouchableScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.sectionindicator.AbsSectionIndicator;
@@ -76,6 +78,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private Runnable mAutoHideProcessRunnable;
     private Runnable mForceRefreshHandleRunnable;
     private Rect mTempRect = new Rect();
+    private InternalAdapterDataObserver mAdapterDataObserver;
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -141,8 +144,17 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     protected void refreshHandle() {
         // synchronize the handle position to the RecyclerView
-        float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
-        moveHandleToPosition(scrollProgress);
+        if (getScrollProgressCalculator() != null && mRecyclerView != null) {
+            float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
+            moveHandleToPosition(scrollProgress);
+        }
+    }
+
+    protected void postRefreshHandle() {
+        if (mForceRefreshHandleRunnable != null) {
+            removeCallbacks(mForceRefreshHandleRunnable);
+            post(mForceRefreshHandleRunnable);
+        }
     }
 
     @Override
@@ -266,6 +278,24 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         return mOnScrollListener;
     }
 
+    /**
+     * Returns {@link android.support.v7.widget.RecyclerView.AdapterDataObserver} object which observes
+     * data set changes and automatically refresh the scroller's handle position.
+     *
+     * @return observer object
+     */
+    public RecyclerView.AdapterDataObserver getAdapterDataObserver() {
+        if (mAdapterDataObserver == null) {
+            mAdapterDataObserver = new InternalAdapterDataObserver(this);
+        }
+        return mAdapterDataObserver;
+    }
+
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        postRefreshHandle();
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -316,8 +346,10 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     }
 
     private void handleOnScrolled(RecyclerView recyclerView, int dx, int dy) {
-        final float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(recyclerView);
-        moveHandleToPosition(scrollProgress);
+        // update handle position
+        if (!mIsGrabbingHandle) {
+            refreshHandle();
+        }
 
         // show scroll bar
         if (!mFastScrollAlwaysVisible && mUsingFastScroller) {
@@ -551,4 +583,46 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
      * @return scrolled position
      */
     protected abstract int scrollToProgress(RecyclerView recyclerView, float progress);
+
+
+    private static class InternalAdapterDataObserver extends RecyclerView.AdapterDataObserver {
+        private WeakReference<AbsRecyclerViewFastScroller> mRefScroller;
+
+        public InternalAdapterDataObserver(AbsRecyclerViewFastScroller scroller) {
+            super();
+            mRefScroller = new WeakReference<>(scroller);
+        }
+
+        private void onAdapterDataChanged() {
+            final AbsRecyclerViewFastScroller scroller = mRefScroller.get();
+            if (scroller != null) {
+                scroller.postRefreshHandle();
+            }
+        }
+
+        @Override
+        public void onChanged() {
+            onAdapterDataChanged();
+        }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            onAdapterDataChanged();
+        }
+
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            onAdapterDataChanged();
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            onAdapterDataChanged();
+        }
+
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            onAdapterDataChanged();
+        }
+    }
 }

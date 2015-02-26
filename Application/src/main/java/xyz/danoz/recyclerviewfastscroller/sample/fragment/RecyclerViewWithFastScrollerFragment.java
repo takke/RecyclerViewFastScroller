@@ -59,6 +59,9 @@ public class RecyclerViewWithFastScrollerFragment extends Fragment {
         RecyclerView.Adapter adapter = new ColorfulAdapter(new ColorDataSet());
         recyclerView.setAdapter(adapter);
 
+        // Connect the scroller to the adapter to observe data set changes
+        adapter.registerAdapterDataObserver(fastScroller.getAdapterDataObserver());
+
         return rootView;
     }
 

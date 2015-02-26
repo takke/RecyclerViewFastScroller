@@ -43,6 +43,9 @@ public class RecyclerViewWithSectionIndicatorFragment extends Fragment {
         // Connect the scroller to the recycler (to let the recycler scroll the scroller's handle)
         recyclerView.setOnScrollListener(fastScroller.getOnScrollListener());
 
+        // Connect the scroller to the adapter to observe data set changes
+        adapter.registerAdapterDataObserver(fastScroller.getAdapterDataObserver());
+
         setRecyclerViewLayoutManager(recyclerView);
 
         return rootView;
