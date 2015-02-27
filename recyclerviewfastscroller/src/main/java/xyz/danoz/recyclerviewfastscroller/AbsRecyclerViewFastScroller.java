@@ -46,6 +46,9 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private static final int CURRENT_ANIMATION_SHOW = 1;
     private static final int CURRENT_ANIMATION_HIDE = 2;
 
+    private static final int REFRESH_MASK_HANDLE_POSITION = 1;
+    private static final int REFRESH_MASK_NUM_ITEMS_PER_PAGE = 2;
+
     /** The container view for the long bar and handle views */
     protected final FrameLayout mBarHandleContainer;
     /** The long bar along which a handle travels */
@@ -71,12 +74,17 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private boolean mFastScrollAlwaysVisible = false;
     /** Whether to use fast scroller for the current scroll state */
     private boolean mUsingFastScroller = false;
+
+    /** Approximately number of pages */
+    private int mApproxNumberOfPage;
+
     /** Type of the view animation (CURRENT_ANIMATION_xxx) */
     private int mCurrentAnimationType = CURRENT_ANIMATION_NONE;
     /** Indicates whether refreshing handle position is required */
-    private boolean mForceRefreshHandlePending;
+    private boolean mForceRefreshProcessPending;
     private Runnable mAutoHideProcessRunnable;
-    private Runnable mForceRefreshHandleRunnable;
+    private Runnable mRefreshProcessRunnable;
+    private int mPendingRefreshMask;
     private Rect mTempRect = new Rect();
     private InternalAdapterDataObserver mAdapterDataObserver;
     private SectionIndexer mSectionIndexer;
@@ -133,14 +141,36 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             hide();
         }
 
-        mForceRefreshHandleRunnable = new Runnable() {
+        mRefreshProcessRunnable = new Runnable() {
             @Override
             public void run() {
-                refreshHandle();
+                final int mask = mPendingRefreshMask;
+                mPendingRefreshMask = 0;
+
+                processRefresh(mask);
             }
         };
 
-        mForceRefreshHandlePending = true;
+        mForceRefreshProcessPending = true;
+    }
+
+    protected void processRefresh(int mask) {
+        if (mask == 0) {
+            return;
+        }
+
+        // update the mApproxNumberOfPage field
+        if ((mask & REFRESH_MASK_NUM_ITEMS_PER_PAGE) != 0) {
+            final int numItemsPerPage = getNumItemsPerPage(mRecyclerView);
+            final int numTotalItems = mRecyclerView.getAdapter().getItemCount();
+
+            mApproxNumberOfPage = (numItemsPerPage > 0) ? numTotalItems / numItemsPerPage : 0;
+        }
+
+        // refresh handle position
+        if ((mask & REFRESH_MASK_HANDLE_POSITION) != 0) {
+            refreshHandle();
+        }
     }
 
     protected void refreshHandle() {
@@ -151,10 +181,15 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         }
     }
 
-    protected void postRefreshHandle() {
-        if (mForceRefreshHandleRunnable != null) {
-            removeCallbacks(mForceRefreshHandleRunnable);
-            post(mForceRefreshHandleRunnable);
+    protected void postRefreshProcess(int mask) {
+        if (mRefreshProcessRunnable != null) {
+            final int currentMask = mPendingRefreshMask;
+
+            mPendingRefreshMask |= mask;
+
+            if (currentMask == 0) {
+                post(mRefreshProcessRunnable);
+            }
         }
     }
 
@@ -162,17 +197,20 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        removeCallbacks(mForceRefreshHandleRunnable);
-        mForceRefreshHandleRunnable = null;
+        removeCallbacks(mRefreshProcessRunnable);
+        mRefreshProcessRunnable = null;
+        mPendingRefreshMask = 0;
 
         cancelAutoHideScrollerProcess();
         mAutoHideProcessRunnable = null;
+
+        mForceRefreshProcessPending = false;
     }
 
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mForceRefreshHandlePending = true;
+        mForceRefreshProcessPending = true;
     }
 
     private void applyCustomAttributesToView(View view, Drawable drawable, int color) {
@@ -323,7 +361,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        postRefreshHandle();
+        postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
     }
 
     @Override
@@ -345,10 +383,10 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             }
         }
 
-        // refresh handle position if needed
-        if (mForceRefreshHandlePending) {
-            mForceRefreshHandlePending = false;
-            post(mForceRefreshHandleRunnable);
+        // post refresh process if needed
+        if (mForceRefreshProcessPending) {
+            mForceRefreshProcessPending = false;
+            postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
         }
     }
 
@@ -363,11 +401,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
                     mUsingFastScroller = true;
                     setStandardScrollerEnabled(recyclerView, false);
                 } else {
-                    final int numItemsPerPage = getNumItemsPerPage(recyclerView);
-                    final int numTotalItems = recyclerView.getAdapter().getItemCount();
-                    final float numPages = (numItemsPerPage > 0) ? (float) numTotalItems / numItemsPerPage : 0;
-
-                    mUsingFastScroller = (numPages >= USE_FAST_SCROLLER_THRESHOLD);
+                    mUsingFastScroller = (mApproxNumberOfPage >= USE_FAST_SCROLLER_THRESHOLD);
 
                     setStandardScrollerEnabled(recyclerView, !mUsingFastScroller);
                 }
@@ -560,6 +594,10 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         return getScrollProgressCalculator().calculateScrollProgress(event);
     }
 
+    protected void onAdapterDataChanged() {
+        postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
+    }
+
     /**
      * Define a layout resource for your implementation of AbsFastScroller
      * Currently must contain a handle view (R.id.scroll_handle) and a bar (R.id.scroll_bar)
@@ -626,7 +664,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         private void onAdapterDataChanged() {
             final AbsRecyclerViewFastScroller scroller = mRefScroller.get();
             if (scroller != null) {
-                scroller.postRefreshHandle();
+                scroller.onAdapterDataChanged();
             }
         }
 
