@@ -79,6 +79,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private Runnable mForceRefreshHandleRunnable;
     private Rect mTempRect = new Rect();
     private InternalAdapterDataObserver mAdapterDataObserver;
+    private SectionIndexer mSectionIndexer;
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -237,6 +238,34 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         return mSectionIndicator;
     }
 
+    /**
+     * Sets {@link android.widget.SectionIndexer}
+     * @param sectionIndexer section indexer
+     */
+    public void setSectionIndexer(SectionIndexer sectionIndexer) {
+        mSectionIndexer = sectionIndexer;
+    }
+
+    /**
+     * Gets {@link android.widget.SectionIndexer}.
+     * @return section indexer
+     */
+    @Nullable
+    public SectionIndexer getSectionIndexer() {
+        if (mSectionIndexer != null) {
+            return mSectionIndexer;
+        }
+
+        // check whether the adapter implements indexer
+        final RecyclerView.Adapter adapter = (mRecyclerView != null) ? mRecyclerView.getAdapter() : null;
+
+        if (adapter instanceof SectionIndexer) {
+            return (SectionIndexer) adapter;
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void scrollTo(float scrollProgress, boolean fromTouch) {
         int position = scrollToProgress(mRecyclerView, scrollProgress);
@@ -246,8 +275,9 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private void updateSectionIndicator(int position, float scrollProgress) {
         if (mSectionIndicator != null) {
             mSectionIndicator.setProgress(scrollProgress);
-            if (mRecyclerView.getAdapter() instanceof SectionIndexer) {
-                SectionIndexer indexer = ((SectionIndexer) mRecyclerView.getAdapter());
+
+            SectionIndexer indexer = getSectionIndexer();
+            if (indexer != null) {
                 int section = indexer.getSectionForPosition(position);
                 Object[] sections = indexer.getSections();
                 mSectionIndicator.setSection(sections[section]);
