@@ -28,6 +28,7 @@ import xyz.danoz.recyclerviewfastscroller.calculation.progress.ScrollProgressCal
 import xyz.danoz.recyclerviewfastscroller.calculation.progress.TouchableScrollProgressCalculator;
 import xyz.danoz.recyclerviewfastscroller.sectionindicator.AbsSectionIndicator;
 import xyz.danoz.recyclerviewfastscroller.sectionindicator.SectionIndicator;
+import xyz.danoz.recyclerviewfastscroller.utils.ViewUtils;
 
 /**
  * Defines a basic widget that will allow for fast scrolling a RecyclerView using the basic paradigm of
@@ -120,6 +121,10 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             Drawable handleDrawable = attributes.getDrawable(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_handleBackground);
             int handleColor = attributes.getColor(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_handleColor, Color.GRAY);
             applyCustomAttributesToView(mHandle, handleDrawable, handleColor);
+
+            // for android:state_pressed
+            mHandle.setEnabled(true);
+            mHandle.setClickable(true);
         } finally {
             attributes.recycle();
         }
@@ -213,6 +218,16 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             if (currentMask == 0) {
                 post(mRefreshProcessRunnable);
             }
+        }
+    }
+
+    protected void setHandleStates(boolean grabbing) {
+        if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
+            // for android:state_activated (only available on API level 11 or later)
+            ViewUtils.setActivated(mHandle, grabbing);
+        } else {
+            // for state:state_selected (for maintaining compatibility with API level 10 or below)
+            mHandle.setSelected(grabbing);
         }
     }
 
@@ -598,6 +613,8 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         }
 
         mIsGrabbingHandle = isGrabbingHandle;
+
+        setHandleStates(isGrabbingHandle);
 
         if (!mFastScrollAlwaysVisible) {
             if (isGrabbingHandle) {
