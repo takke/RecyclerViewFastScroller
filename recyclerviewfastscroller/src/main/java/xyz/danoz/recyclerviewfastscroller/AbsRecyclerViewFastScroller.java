@@ -144,40 +144,63 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         mRefreshProcessRunnable = new Runnable() {
             @Override
             public void run() {
-                final int mask = mPendingRefreshMask;
-                mPendingRefreshMask = 0;
+                int mask = mPendingRefreshMask;
 
-                processRefresh(mask);
+                // clear actually processed flags
+                mask ^= processRefresh(mask);
+
+                mPendingRefreshMask = mask;
+
             }
         };
 
         mForceRefreshProcessPending = true;
     }
 
-    protected void processRefresh(int mask) {
+    protected int processRefresh(int mask) {
         if (mask == 0) {
-            return;
+            return 0;
         }
+
+        int processedMask = 0;
 
         // update the mApproxNumberOfPage field
         if ((mask & REFRESH_MASK_NUM_ITEMS_PER_PAGE) != 0) {
-            final int numItemsPerPage = getNumItemsPerPage(mRecyclerView);
-            final int numTotalItems = mRecyclerView.getAdapter().getItemCount();
-
-            mApproxNumberOfPage = (numItemsPerPage > 0) ? numTotalItems / numItemsPerPage : 0;
+            if (refreshApproxNumberOfPage()) {
+                processedMask |= REFRESH_MASK_NUM_ITEMS_PER_PAGE;
+            }
         }
 
         // refresh handle position
         if ((mask & REFRESH_MASK_HANDLE_POSITION) != 0) {
-            refreshHandle();
+            if (refreshHandle()) {
+                processedMask |= REFRESH_MASK_HANDLE_POSITION;
+            }
+        }
+
+        return processedMask;
+    }
+
+    protected boolean refreshApproxNumberOfPage() {
+        if (mRecyclerView != null) {
+            final int numItemsPerPage = getNumItemsPerPage(mRecyclerView);
+            final int numTotalItems = mRecyclerView.getAdapter().getItemCount();
+
+            mApproxNumberOfPage = (numItemsPerPage > 0) ? numTotalItems / numItemsPerPage : 0;
+            return true;
+        } else {
+            return false;
         }
     }
 
-    protected void refreshHandle() {
+    protected boolean refreshHandle() {
         // synchronize the handle position to the RecyclerView
         if (getScrollProgressCalculator() != null && mRecyclerView != null) {
             float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
             moveHandleToPosition(scrollProgress);
+            return true;
+        } else {
+            return false;
         }
     }
 

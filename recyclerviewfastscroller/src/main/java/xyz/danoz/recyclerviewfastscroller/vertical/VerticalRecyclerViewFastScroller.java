@@ -60,6 +60,9 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
     @Override
     public int getNumItemsPerPage(RecyclerView recyclerView) {
+        if (mNumberItemsPerPageCalculator == null) {
+            mNumberItemsPerPageCalculator = new VerticalLinearLayoutManagerNumberItemsPerPageCalculator();
+        }
         return mNumberItemsPerPageCalculator.calculateNumItemsPerPage(recyclerView);
     }
 
@@ -83,7 +86,6 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
         VerticalScrollBoundsProvider boundsProvider = new VerticalScrollBoundsProvider(barBounds.top, barBounds.bottom);
         mScrollProgressCalculator = new VerticalLinearLayoutManagerScrollProgressCalculator(boundsProvider);
         mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
-        mNumberItemsPerPageCalculator = new VerticalLinearLayoutManagerNumberItemsPerPageCalculator();
     }
 
     @Override
