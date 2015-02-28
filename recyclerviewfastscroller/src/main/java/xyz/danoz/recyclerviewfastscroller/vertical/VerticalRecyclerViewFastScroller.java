@@ -114,8 +114,8 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
             final RecyclerView.ViewHolder scrollPosViewHolder = recyclerView.findViewHolderForPosition(iScrollPosition);
             final RecyclerView.ViewHolder lastItemViewHolder = (lastVisiblePos == (itemCount - 1)) ? recyclerView.findViewHolderForPosition(lastVisiblePos) : null;
             final int curItemTop = scrollPosViewHolder.itemView.getTop();
-            final int lastItemTop = (lastItemViewHolder != null) ? lastItemViewHolder.itemView.getTop() : Integer.MAX_VALUE;
-            final int scrollAmount = Math.min(curItemTop, lastItemTop);
+            final int remainScrollableDistance = (lastItemViewHolder != null) ? Math.max(0, (lastItemViewHolder.itemView.getBottom() - height)) : Integer.MAX_VALUE;
+            final int scrollAmount = Math.min(curItemTop, remainScrollableDistance);
 
             if ((scrollAmount > 0) && (lastCompletelyVisiblePos == (itemCount - 1))) {
                 // reached to the end of the list
