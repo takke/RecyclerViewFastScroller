@@ -1,7 +1,9 @@
 package xyz.danoz.recyclerviewfastscroller.utils;
 
 import android.os.Build;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 public class ViewUtils {
     static abstract class Impl {
@@ -10,12 +12,17 @@ public class ViewUtils {
         public abstract float getTranslationX(View view);
         public abstract void setTranslationY(View view, float translationY);
         public abstract float getTranslationY(View view);
+
+        public abstract void addOnGlobalLayoutListener(ViewTreeObserver viewTreeObserver, ViewTreeObserver.OnGlobalLayoutListener listener);
+        public abstract void removeOnGlobalLayoutListener(ViewTreeObserver viewTreeObserver, ViewTreeObserver.OnGlobalLayoutListener victim);
     }
 
     static final Impl IMPL;
 
     static {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            IMPL = new ViewUtilsImplJB();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             IMPL = new ViewUtilsImplHoneycomb();
         } else {
             IMPL = new ViewUtilsImplGB();
@@ -68,5 +75,33 @@ public class ViewUtils {
      */
     public static float getTranslationY(View view) {
         return IMPL.getTranslationY(view);
+    }
+
+    /**
+     * Compatibility version of the View.getViewTreeObserver().addOnGlobalLayoutListener() method.
+     * @param view target view
+     * @return listener global layout listener
+     */
+    public static void viewTreeObserverAddOnGlobalLayoutListener(
+            View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
+        ViewTreeObserver viewTreeObserver = view.getViewTreeObserver();
+
+        if (viewTreeObserver.isAlive()) {
+            IMPL.addOnGlobalLayoutListener(viewTreeObserver, listener);
+        }
+    }
+
+    /**
+     * Compatibility version of the View.getViewTreeObserver().removeOnGlobalLayoutListener() method.
+     * @param view target view
+     * @return victim global layout listener
+     */
+    public static void viewTreeObserverRemoveOnGlobalLayoutListener(
+            View view, ViewTreeObserver.OnGlobalLayoutListener victim) {
+        ViewTreeObserver viewTreeObserver = view.getViewTreeObserver();
+
+        if (viewTreeObserver.isAlive()) {
+            IMPL.removeOnGlobalLayoutListener(viewTreeObserver, victim);
+        }
     }
 }

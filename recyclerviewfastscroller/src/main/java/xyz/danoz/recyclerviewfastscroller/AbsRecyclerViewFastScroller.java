@@ -1,7 +1,6 @@
 package xyz.danoz.recyclerviewfastscroller;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -17,6 +16,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -47,8 +47,9 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private static final int CURRENT_ANIMATION_SHOW = 1;
     private static final int CURRENT_ANIMATION_HIDE = 2;
 
-    private static final int REFRESH_MASK_HANDLE_POSITION = 1;
-    private static final int REFRESH_MASK_NUM_ITEMS_PER_PAGE = 2;
+    private static final int REFRESH_MASK_RUNNABLE_QUEUED = 1;
+    private static final int REFRESH_MASK_HANDLE_POSITION = 2;
+    private static final int REFRESH_MASK_NUM_ITEMS_PER_PAGE = 4;
 
     /** The container view for the long bar and handle views */
     protected final FrameLayout mBarHandleContainer;
@@ -82,13 +83,13 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     /** Type of the view animation (CURRENT_ANIMATION_xxx) */
     private int mCurrentAnimationType = CURRENT_ANIMATION_NONE;
     /** Indicates whether refreshing handle position is required */
-    private boolean mForceRefreshProcessPending;
     private Runnable mAutoHideProcessRunnable;
     private Runnable mRefreshProcessRunnable;
     private int mPendingRefreshMask;
     private Rect mTempRect = new Rect();
     private InternalAdapterDataObserver mAdapterDataObserver;
     private SectionIndexer mSectionIndexer;
+    private ViewTreeObserver.OnGlobalLayoutListener mRecyclerViewOnGlobalLayoutListener;
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -151,6 +152,9 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             public void run() {
                 int mask = mPendingRefreshMask;
 
+                // clear queued flag
+                mask &= (~REFRESH_MASK_RUNNABLE_QUEUED);
+
                 // clear actually processed flags
                 mask ^= processRefresh(mask);
 
@@ -158,8 +162,6 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
             }
         };
-
-        mForceRefreshProcessPending = true;
     }
 
     protected int processRefresh(int mask) {
@@ -187,7 +189,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     }
 
     protected boolean refreshApproxNumberOfPage() {
-        if (mRecyclerView != null) {
+        if (mRecyclerView != null && mRecyclerView.getHeight() > 0) {
             final int numItemsPerPage = getNumItemsPerPage(mRecyclerView);
             final int numTotalItems = mRecyclerView.getAdapter().getItemCount();
 
@@ -200,7 +202,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     protected boolean refreshHandle() {
         // synchronize the handle position to the RecyclerView
-        if (getScrollProgressCalculator() != null && mRecyclerView != null) {
+        if (getScrollProgressCalculator() != null && mRecyclerView != null && mRecyclerView.getHeight() > 0) {
             float scrollProgress = getScrollProgressCalculator().calculateScrollProgress(mRecyclerView);
             moveHandleToPosition(scrollProgress);
             return true;
@@ -211,11 +213,11 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     protected void postRefreshProcess(int mask) {
         if (mRefreshProcessRunnable != null) {
-            final int currentMask = mPendingRefreshMask;
-
             mPendingRefreshMask |= mask;
 
-            if (currentMask == 0) {
+            if ((mPendingRefreshMask & REFRESH_MASK_RUNNABLE_QUEUED) == 0) {
+                mPendingRefreshMask |= REFRESH_MASK_RUNNABLE_QUEUED;
+
                 post(mRefreshProcessRunnable);
             }
         }
@@ -241,14 +243,6 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
         cancelAutoHideScrollerProcess();
         mAutoHideProcessRunnable = null;
-
-        mForceRefreshProcessPending = false;
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mForceRefreshProcessPending = true;
     }
 
     private void applyCustomAttributesToView(View view, Drawable drawable, int color) {
@@ -302,10 +296,44 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     @Override
     public void setRecyclerView(RecyclerView recyclerView) {
+        if (recyclerView == mRecyclerView) {
+            return;
+        }
+
+        if (mRecyclerView != null && mRecyclerViewOnGlobalLayoutListener != null) {
+            // unregister observer
+            ViewUtils.viewTreeObserverRemoveOnGlobalLayoutListener(mRecyclerView, mRecyclerViewOnGlobalLayoutListener);
+        }
+
+        if (mRecyclerViewOnGlobalLayoutListener == null) {
+            mRecyclerViewOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    onRecyclerViewGlobalLayout();
+                }
+            };
+        }
+
         mRecyclerView = recyclerView;
+
+        if (mRecyclerView != null && mRecyclerViewOnGlobalLayoutListener != null) {
+            // register observer
+            ViewUtils.viewTreeObserverAddOnGlobalLayoutListener(mRecyclerView, mRecyclerViewOnGlobalLayoutListener);
+        }
 
         if (mRecyclerView != null) {
             setStandardScrollerEnabled(mRecyclerView, false);
+        }
+    }
+
+    void onRecyclerViewGlobalLayout() {
+        if (mRecyclerView != null && mRecyclerView.getHeight() != 0) {
+            // unregister observer
+            ViewUtils.viewTreeObserverRemoveOnGlobalLayoutListener(mRecyclerView, mRecyclerViewOnGlobalLayoutListener);
+            mRecyclerViewOnGlobalLayoutListener = null;
+
+            // post refresh
+            postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
         }
     }
 
@@ -399,7 +427,10 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
+
+        if (isScrollerOrientationSizeChanged(w, h, oldw, oldh)) {
+            postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
+        }
     }
 
     @Override
@@ -419,12 +450,6 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             if (mSectionIndicator != null) {
                 mSectionIndicator.onUpdateScrollBarBounds(bounds);
             }
-        }
-
-        // post refresh process if needed
-        if (mForceRefreshProcessPending) {
-            mForceRefreshProcessPending = false;
-            postRefreshProcess(REFRESH_MASK_HANDLE_POSITION | REFRESH_MASK_NUM_ITEMS_PER_PAGE);
         }
     }
 
@@ -692,6 +717,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
      */
     protected abstract int scrollToProgress(RecyclerView recyclerView, float progress);
 
+    protected abstract boolean isScrollerOrientationSizeChanged(int w, int h, int oldw, int oldh);
 
     private static class InternalAdapterDataObserver extends RecyclerView.AdapterDataObserver {
         private WeakReference<AbsRecyclerViewFastScroller> mRefScroller;

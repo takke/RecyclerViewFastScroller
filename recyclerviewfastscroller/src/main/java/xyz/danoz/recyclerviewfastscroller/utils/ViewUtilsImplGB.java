@@ -2,6 +2,7 @@ package xyz.danoz.recyclerviewfastscroller.utils;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 class ViewUtilsImplGB extends ViewUtils.Impl {
     @Override
@@ -33,6 +34,17 @@ class ViewUtilsImplGB extends ViewUtils.Impl {
     public float getTranslationY(View view) {
         final ViewGroup.MarginLayoutParams lp = getMarginLayoutParams(view);
         return lp.topMargin;
+    }
+
+    @Override
+    public void addOnGlobalLayoutListener(ViewTreeObserver viewTreeObserver, ViewTreeObserver.OnGlobalLayoutListener listener) {
+        viewTreeObserver.addOnGlobalLayoutListener(listener);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void removeOnGlobalLayoutListener(ViewTreeObserver viewTreeObserver, ViewTreeObserver.OnGlobalLayoutListener victim) {
+        viewTreeObserver.removeGlobalOnLayoutListener(victim);
     }
 
     private static ViewGroup.MarginLayoutParams getMarginLayoutParams(View view) {

@@ -3,9 +3,10 @@ package xyz.danoz.recyclerviewfastscroller.utils;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-class ViewUtilsImplHoneycomb extends ViewUtilsImplGB {
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+class ViewUtilsImplJB extends ViewUtilsImplHoneycomb {
     @Override
     public void setActivated(View view, boolean activated) {
         view.setActivated(activated);
@@ -29,5 +30,10 @@ class ViewUtilsImplHoneycomb extends ViewUtilsImplGB {
     @Override
     public float getTranslationY(View view) {
         return view.getTranslationY();
+    }
+
+    @Override
+    public void removeOnGlobalLayoutListener(ViewTreeObserver viewTreeObserver, ViewTreeObserver.OnGlobalLayoutListener victim) {
+        viewTreeObserver.removeOnGlobalLayoutListener(victim);
     }
 }

@@ -128,4 +128,9 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
 
         return iScrollPosition;
     }
+
+    @Override
+    protected boolean isScrollerOrientationSizeChanged(int w, int h, int oldw, int oldh) {
+        return (h != oldh);
+    }
 }
