@@ -27,6 +27,7 @@ public abstract class AbsSectionIndicator<T> extends RelativeLayout implements S
     private VerticalScreenPositionCalculator mScreenPositionCalculator;
     private SectionIndicatorAnimationHelper mDefaultSectionIndicatorAnimationHelper;
     private float mIndicatorOffset;
+    private int mUnspecifiedMeasuredHeight = -1;
 
     public AbsSectionIndicator(Context context) {
         this(context, null);
@@ -75,14 +76,21 @@ public abstract class AbsSectionIndicator<T> extends RelativeLayout implements S
     @Override
     public void onUpdateScrollBarBounds(Rect barBounds) {
         VerticalScrollBoundsProvider boundsProvider = new VerticalScrollBoundsProvider(0, barBounds.height());
-        mIndicatorOffset = - getHeight() + barBounds.top;
+        mIndicatorOffset = barBounds.top;
         mScreenPositionCalculator = new VerticalScreenPositionCalculator(boundsProvider);
     }
 
     @Override
     public void setProgress(float progress) {
         float posY = mScreenPositionCalculator.getYPositionFromScrollProgress(progress);
-        posY = Math.max(0, posY + mIndicatorOffset);
+
+        // Do not use getHeight() method because getHeight() method may returns cropped value by parent view
+        if (mUnspecifiedMeasuredHeight < 0) {
+            measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+            mUnspecifiedMeasuredHeight = getMeasuredHeight();
+        }
+
+        posY = Math.max(0, posY + mIndicatorOffset - mUnspecifiedMeasuredHeight);
         ViewUtils.setTranslationY(this, posY);
     }
 
