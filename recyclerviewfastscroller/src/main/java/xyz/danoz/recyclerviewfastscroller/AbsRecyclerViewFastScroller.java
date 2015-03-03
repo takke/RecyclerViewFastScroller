@@ -123,6 +123,12 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
             int handleColor = attributes.getColor(R.styleable.rvfs_AbsRecyclerViewFastScroller_rvfs_handleColor, Color.GRAY);
             applyCustomAttributesToView(mHandle, handleDrawable, handleColor);
 
+            // set the initial visibility of the section indicator
+            // (set to GONE because the showing/hiding animation are affected by the view size)
+            if (mSectionIndicator instanceof View) {
+                ((View) mSectionIndicator).setVisibility(View.GONE);
+            }
+
             // for android:state_pressed
             mHandle.setEnabled(true);
             mHandle.setClickable(true);
