@@ -41,7 +41,6 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private static final int[] STYLEABLE = R.styleable.rvfs_AbsRecyclerViewFastScroller;
 
     private static final int AUTO_HIDE_SCROLLER_TIMEOUT_MILLS = 1000;
-    private static final float USE_FAST_SCROLLER_THRESHOLD = 3.0f;
 
     private static final int CURRENT_ANIMATION_NONE = 0;
     private static final int CURRENT_ANIMATION_SHOW = 1;
@@ -90,6 +89,8 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private InternalAdapterDataObserver mAdapterDataObserver;
     private SectionIndexer mSectionIndexer;
     private ViewTreeObserver.OnGlobalLayoutListener mRecyclerViewOnGlobalLayoutListener;
+
+    private float mUseFastScrollerThresholdNumPages = 3.0f;
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -470,7 +471,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
                     mUsingFastScroller = true;
                     setStandardScrollerEnabled(recyclerView, false);
                 } else {
-                    mUsingFastScroller = (mApproxNumberOfPage >= USE_FAST_SCROLLER_THRESHOLD);
+                    mUsingFastScroller = (mApproxNumberOfPage >= mUseFastScrollerThresholdNumPages);
 
                     setStandardScrollerEnabled(recyclerView, !mUsingFastScroller);
                 }
@@ -632,6 +633,22 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
         } else {
             hide();
         }
+    }
+
+    /**
+     * Gets the threshold whether to use fast scroller
+     * @return threshold
+     */
+    public float getUseFastScrollerThresholdNumPages() {
+        return mUseFastScrollerThresholdNumPages;
+    }
+
+    /**
+     * Sets the threshold whether to use fast scroller
+     * @param thresholdNumPages threshold
+     */
+    public void setFastScrollerThresholdNumPages(float thresholdNumPages) {
+        mUseFastScrollerThresholdNumPages = thresholdNumPages;
     }
 
     /**
