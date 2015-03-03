@@ -8,7 +8,7 @@ public class VerticalLinearLayoutManagerNumberItemsPerPageCalculator implements 
      * {@inheritDoc}
      */
     @Override
-    public int calculateNumItemsPerPage(RecyclerView recyclerView) {
+    public float calculateNumItemsPerPage(RecyclerView recyclerView) {
         // NOTE: This process expects LinearLayoutManager and hasFixedSize() == true
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
@@ -19,8 +19,14 @@ public class VerticalLinearLayoutManagerNumberItemsPerPageCalculator implements 
         }
 
         RecyclerView.ViewHolder vh = recyclerView.findViewHolderForPosition(visibleItemPos);
+        int itemHeight = vh.itemView.getHeight();
+
+        if (itemHeight == 0) {
+            return 1;
+        }
+
         int recyclerHeight = layoutManager.getHeight();
-        int itemsPerPage = recyclerHeight / vh.itemView.getHeight();
+        float itemsPerPage = (float) recyclerHeight / itemHeight;
 
         return itemsPerPage;
     }

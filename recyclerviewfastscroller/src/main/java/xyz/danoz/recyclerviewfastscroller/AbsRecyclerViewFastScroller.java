@@ -78,7 +78,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     private boolean mUsingFastScroller = false;
 
     /** Approximately number of pages */
-    private int mApproxNumberOfPage;
+    private float mApproxNumberOfPage;
 
     /** Type of the view animation (CURRENT_ANIMATION_xxx) */
     private int mCurrentAnimationType = CURRENT_ANIMATION_NONE;
@@ -196,10 +196,10 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     protected boolean refreshApproxNumberOfPage() {
         if (mRecyclerView != null && mRecyclerView.getHeight() > 0) {
-            final int numItemsPerPage = getNumItemsPerPage(mRecyclerView);
+            final float numItemsPerPage = getNumItemsPerPage(mRecyclerView);
             final int numTotalItems = mRecyclerView.getAdapter().getItemCount();
 
-            mApproxNumberOfPage = (numItemsPerPage > 0) ? numTotalItems / numItemsPerPage : 0;
+            mApproxNumberOfPage = (numItemsPerPage > 0) ? (float) numTotalItems / numItemsPerPage : 0;
             return true;
         } else {
             return false;
@@ -693,7 +693,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
      * @param recyclerView {@link android.support.v7.widget.RecyclerView} instance which is associated to the scroller
      * @return number of items
      */
-    public abstract int getNumItemsPerPage(RecyclerView recyclerView);
+    public abstract float getNumItemsPerPage(RecyclerView recyclerView);
 
     /**
      * Sets whether to use standard scroller

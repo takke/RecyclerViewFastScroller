@@ -59,7 +59,7 @@ public class VerticalRecyclerViewFastScroller extends AbsRecyclerViewFastScrolle
     }
 
     @Override
-    public int getNumItemsPerPage(RecyclerView recyclerView) {
+    public float getNumItemsPerPage(RecyclerView recyclerView) {
         if (mNumberItemsPerPageCalculator == null) {
             mNumberItemsPerPageCalculator = new VerticalLinearLayoutManagerNumberItemsPerPageCalculator();
         }

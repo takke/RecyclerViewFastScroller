@@ -10,6 +10,6 @@ public interface NumberItemsPerPageCalculator {
      * @param recyclerView RecyclerView
      * @return the number of the item views which can be displayed per page
      */
-    public int calculateNumItemsPerPage(RecyclerView recyclerView);
+    public float calculateNumItemsPerPage(RecyclerView recyclerView);
 }
 
