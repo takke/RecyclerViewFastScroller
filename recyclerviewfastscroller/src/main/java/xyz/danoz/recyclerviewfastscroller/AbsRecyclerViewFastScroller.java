@@ -196,7 +196,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     }
 
     protected boolean refreshApproxNumberOfPage() {
-        if (mRecyclerView != null && mRecyclerView.getHeight() > 0) {
+        if (mRecyclerView != null && mRecyclerView.getHeight() > 0 && mRecyclerView.getAdapter() != null) {
             final float numItemsPerPage = getNumItemsPerPage(mRecyclerView);
             final int numTotalItems = mRecyclerView.getAdapter().getItemCount();
 
