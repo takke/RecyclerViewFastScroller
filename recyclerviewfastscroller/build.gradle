@@ -16,6 +16,11 @@ android {
     }
 
     resourcePrefix 'rvfs_'
+
+    buildTypes {
+        release {
+        }
+    }
 }
 
 dependencies {
