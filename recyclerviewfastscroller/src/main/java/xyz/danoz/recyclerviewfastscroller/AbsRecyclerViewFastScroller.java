@@ -7,11 +7,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,6 +16,12 @@ import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SectionIndexer;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import java.lang.ref.WeakReference;
 
@@ -420,7 +421,7 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     }
 
     /**
-     * Returns {@link android.support.v7.widget.RecyclerView.AdapterDataObserver} object which observes
+     * Returns {@link RecyclerView.AdapterDataObserver} object which observes
      * data set changes and automatically refresh the scroller's handle position.
      *
      * @return observer object
@@ -707,14 +708,14 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
 
     /**
      * Gets how many items can be displayed in a single page
-     * @param recyclerView {@link android.support.v7.widget.RecyclerView} instance which is associated to the scroller
+     * @param recyclerView {@link RecyclerView} instance which is associated to the scroller
      * @return number of items
      */
     public abstract float getNumItemsPerPage(RecyclerView recyclerView);
 
     /**
      * Sets whether to use standard scroller
-     * @param recyclerView {@link android.support.v7.widget.RecyclerView} instance which is associated to the scroller
+     * @param recyclerView {@link RecyclerView} instance which is associated to the scroller
      * @param enabled whether to use standard scroller
      */
     protected abstract void setStandardScrollerEnabled(RecyclerView recyclerView, boolean enabled);
@@ -732,8 +733,8 @@ public abstract class AbsRecyclerViewFastScroller extends RelativeLayout impleme
     protected abstract Animation loadHideAnimation();
 
     /**
-     * Scroll {@link android.support.v7.widget.RecyclerView} to specified scroller progress
-     * @param recyclerView Target {@link android.support.v7.widget.RecyclerView} instance
+     * Scroll {@link RecyclerView} to specified scroller progress
+     * @param recyclerView Target {@link RecyclerView} instance
      * @param progress Scroll progress [0.0 .. 1.0]
      *
      * @return scrolled position

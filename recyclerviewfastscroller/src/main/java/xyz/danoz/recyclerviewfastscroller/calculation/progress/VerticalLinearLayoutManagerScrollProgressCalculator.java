@@ -1,10 +1,10 @@
 package xyz.danoz.recyclerviewfastscroller.calculation.progress;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import xyz.danoz.recyclerviewfastscroller.AbsRecyclerViewFastScroller;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import xyz.danoz.recyclerviewfastscroller.calculation.VerticalScrollBoundsProvider;
 
 /**

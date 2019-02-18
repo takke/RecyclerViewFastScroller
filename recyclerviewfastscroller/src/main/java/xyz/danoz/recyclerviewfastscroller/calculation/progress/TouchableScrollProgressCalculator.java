@@ -1,7 +1,8 @@
 package xyz.danoz.recyclerviewfastscroller.calculation.progress;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**

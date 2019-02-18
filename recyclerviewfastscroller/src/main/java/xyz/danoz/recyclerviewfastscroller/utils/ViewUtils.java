@@ -1,7 +1,6 @@
 package xyz.danoz.recyclerviewfastscroller.utils;
 
 import android.os.Build;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
 

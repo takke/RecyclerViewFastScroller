@@ -1,12 +1,13 @@
 package xyz.danoz.recyclerviewfastscroller;
 
-import xyz.danoz.recyclerviewfastscroller.sectionindicator.SectionIndicator;
-
-import android.support.annotation.Nullable;
-import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+
+import androidx.annotation.Nullable;
+import androidx.core.view.MotionEventCompat;
+
+import xyz.danoz.recyclerviewfastscroller.sectionindicator.SectionIndicator;
 
 /**
  * Touch listener that will move a {@link AbsRecyclerViewFastScroller}'s handle to a specified offset along the scroll bar

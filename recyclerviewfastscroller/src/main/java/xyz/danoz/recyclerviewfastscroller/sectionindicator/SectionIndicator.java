@@ -1,8 +1,9 @@
 package xyz.danoz.recyclerviewfastscroller.sectionindicator;
 
 import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
 import android.widget.SectionIndexer;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * An indicator for which section a {@link RecyclerView} is currently in. This is for RecyclerViews whose adapters

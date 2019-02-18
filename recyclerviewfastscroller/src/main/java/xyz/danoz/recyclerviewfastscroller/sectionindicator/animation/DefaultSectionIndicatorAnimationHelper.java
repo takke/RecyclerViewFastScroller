@@ -1,9 +1,10 @@
 package xyz.danoz.recyclerviewfastscroller.sectionindicator.animation;
 
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.view.View;
+
+import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewPropertyAnimatorCompat;
+import androidx.core.view.ViewPropertyAnimatorListener;
 
 /**
  * Default implementation of the {@link SectionIndicatorAnimationHelper}
