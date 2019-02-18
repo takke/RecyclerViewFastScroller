@@ -24,8 +24,8 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:${legacySupportV4Version}"
+    implementation "androidx.recyclerview:recyclerview:${recyclerviewVersion}"
 }
 
 // Add the below when ready to publish to maven
