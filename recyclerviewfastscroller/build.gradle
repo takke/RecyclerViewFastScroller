@@ -24,7 +24,6 @@ android {
 }
 
 dependencies {
-    implementation "androidx.legacy:legacy-support-v4:${legacySupportV4Version}"
     implementation "androidx.recyclerview:recyclerview:${recyclerviewVersion}"
 }
 
