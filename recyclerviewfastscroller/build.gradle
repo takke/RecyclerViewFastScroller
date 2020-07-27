@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion as Integer
         targetSdkVersion rootProject.ext.targetSdkVersion as Integer
-        versionCode rootProject.ext.versionCode as Integer
-        versionName rootProject.ext.versionName as String
+        versionCode Deps.versionCode as Integer
+        versionName Deps.versionName as String
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
