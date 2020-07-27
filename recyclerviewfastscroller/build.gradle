@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:${recyclerviewVersion}"
+    implementation "androidx.recyclerview:recyclerview:${Deps.recyclerviewVersion}"
 }
 
 // Add the below when ready to publish to maven
