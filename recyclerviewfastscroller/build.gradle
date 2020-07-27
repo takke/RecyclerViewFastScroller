@@ -1,4 +1,4 @@
-import dependencies.Deps
+import dependencies.Dep
 
 apply plugin: 'com.android.library'
 
@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion as Integer
         targetSdkVersion rootProject.ext.targetSdkVersion as Integer
-        versionCode RootDeps.versionCode as Integer
-        versionName RootDeps.versionName as String
+        versionCode RootDep.versionCode as Integer
+        versionName RootDep.versionName as String
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:${Deps.recyclerviewVersion}"
+    implementation "androidx.recyclerview:recyclerview:${Dep.recyclerviewVersion}"
 }
 
 // Add the below when ready to publish to maven
