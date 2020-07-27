@@ -1,3 +1,5 @@
+import dependencies.Deps
+
 apply plugin: 'com.android.library'
 
 android {
@@ -7,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion as Integer
         targetSdkVersion rootProject.ext.targetSdkVersion as Integer
-        versionCode Deps.versionCode as Integer
-        versionName Deps.versionName as String
+        versionCode RootDeps.versionCode as Integer
+        versionName RootDeps.versionName as String
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
