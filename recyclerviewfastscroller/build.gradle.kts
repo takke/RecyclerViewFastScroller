@@ -1,5 +1,3 @@
-import dependencies.Dep
-
 plugins {
     id("com.android.library")
 }
