@@ -1,3 +1,11 @@
+/**
+ * build.gradle.kts 版
+ *
+ * 元々はこちらを利用していたが Gradle 6.7 -> Gradle 6.8-rc-1 に変更すると Make Project (Ctrl+F9) で
+ * "org.gradle.api.internal.initialization.DefaultClassLoaderScope@xxx must be locked before it can be used to compute a classpath!"
+ * のエラーが出るので build.gradle に戻した。
+ */
+
 plugins {
     id("com.android.library")
 }
