@@ -26,5 +26,5 @@ android {
 }
 
 dependencies {
-    implementation("androidx.recyclerview:recyclerview:$recyclerViewVersion")
+    implementation libs.androidx.recyclerview
 }

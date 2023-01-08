@@ -14,7 +14,7 @@ plugins {
 apply(from = "build_android.gradle")
 
 dependencies {
-    implementation("androidx.recyclerview:recyclerview:$recyclerViewVersion")
+    implementation libs.androidx.recyclerview
 }
 
 // Add the below when ready to publish to maven
