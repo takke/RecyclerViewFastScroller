@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'xyz.danoz.recyclerviewfastscroller'
+    namespace = 'xyz.danoz.recyclerviewfastscroller'
 
     compileSdkVersion rootProject.ext.compileSdkVersion as Integer
     buildToolsVersion rootProject.ext.buildToolsVersion as String
